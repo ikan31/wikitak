@@ -3,9 +3,6 @@
 Wikitak returns the first paragraph (summary) of a wikipedia article.
 
 ## Installation
-
-You can install Wikitak using Go (requires Go 1.18+):
-
 ```sh
 go install github.com/ikan31/wikitak@latest
 ```
