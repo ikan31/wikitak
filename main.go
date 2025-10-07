@@ -22,7 +22,7 @@ func getWikipediaSummary(page string) (string, error) {
 	}
 
 	// Set a descriptive User-Agent per Wikipedia's robot policy
-	req.Header.Set("User-Agent", "wikitak/1.0 (https://github.com/yourrepo; contact@example.com)")
+	req.Header.Set("User-Agent", "wikitak/1.0 (https://github.com/ikan31/wikitak; ami.ikanovic@gmail.com)")
 
 	resp, err := client.Do(req)
 	if err != nil {
