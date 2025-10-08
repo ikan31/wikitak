@@ -95,6 +95,8 @@ var rootCmd = &cobra.Command{
 		}
 
 		fmt.Println(summary)
+
+		fmt.Println("https://en.wikipedia.org/wiki/" + page)
 	},
 }
 
