@@ -81,27 +81,25 @@ func getWikipediaSummary(page string) (string, error) {
 	title := strings.ReplaceAll(page, "_", " ")
 
 	if strings.Contains(summary, fmt.Sprintf("%s may refer to:", title)) {
-		// parse the list of articles
+		// Collect all top-level <li> from every <ul> in content, skipping nested <li> in inner <ul>
 		var articles []string
-		content.Find("li").Each(func(i int, s *goquery.Selection) {
-			article := s.Text()
+		content.Find("ul").Each(func(i int, ul *goquery.Selection) {
+			ul.ChildrenFiltered("li").Each(func(j int, li *goquery.Selection) {
+				article := li.Text()
 
-			// lets add the hyperlink if it exists
-			// and what the wikitak command would be
-			// so the result would be like:
-			/*
-				- George (given name)
-				(indent)  https://en.wikipedia.org/wiki/George_(given_name)
-				(indent)  wikitak "George_(given_name)"
-			*/
-			if link, exists := s.Find("a").Attr("href"); exists {
-				if after, ok := strings.CutPrefix(link, "/wiki/"); ok {
-					articleTitle := after
-					article += fmt.Sprintf("\n  https://en.wikipedia.org%s\n  wikitak \"%s\"", link, articleTitle)
+				// if article contains a new line, only keep the text before the newline
+				if idx := strings.Index(article, "\n"); idx != -1 {
+					article = article[:idx]
 				}
-			}
 
-			articles = append(articles, article)
+				if link, exists := li.Find("a").Attr("href"); exists {
+					if after, ok := strings.CutPrefix(link, "/wiki/"); ok {
+						articleTitle := after
+						article += fmt.Sprintf("\n  https://en.wikipedia.org%s\n  wikitak \"%s\"", link, articleTitle)
+					}
+				}
+				articles = append(articles, article)
+			})
 		})
 
 		if len(articles) > 0 {
@@ -181,8 +179,6 @@ var rootCmd = &cobra.Command{
 		}
 
 		fmt.Println(wrapText(summary, 100))
-
-		fmt.Println()
 
 		fmt.Println("https://en.wikipedia.org/wiki/" + page)
 	},
